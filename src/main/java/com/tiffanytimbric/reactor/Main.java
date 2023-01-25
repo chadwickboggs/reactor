@@ -45,23 +45,44 @@ public class Main {
     public static void main( @Nullable final String... args ) {
         System.out.println( "Program Start\n" );
 
-        System.out.println( "Pulling data..." );
-        Flux<Integer> allNumbersFlux = createPullTheDataFlux();
-        System.out.println( "Extracting data as list from Pull Data Flux..." );
-        List<Integer> allNumbers = extractAsList( allNumbersFlux );
-        System.out.println( "All Numbers: " + allNumbers );
-
-        System.out.println( "Pulling data..." );
-        allNumbersFlux = createPullTheDataFlux();
-        System.out.println( "Subscribing to Pull Data Flux..." );
-        allNumbersFlux.subscribe( System.out::println );
-
-        System.out.println( "\nPushing data..." );
-        allNumbersFlux = createPushTheDataFlux();
-        System.out.println( "Subscribing to Push Data Flux..." );
-        allNumbersFlux.subscribe( System.out::println );
+        demoDataPullWithBlockingRead();
+        System.out.println();
+        demoDataPullWithSubscriptionRead();
+        System.out.println();
+        demoDataPushWithSubscriptionRead();
 
         System.out.println( "\nProgram End" );
+    }
+
+    private static void demoDataPullWithBlockingRead() {
+        System.out.println( "Demoing data pull with blocking read..." );
+
+        System.out.println( "Pulling data..." );
+        Flux<Integer> allNumbersFlux = createPullTheDataFlux();
+
+        System.out.println( "Extracting data as list from Pull Data Flux..." );
+        List<Integer> allNumbers = extractAsList( allNumbersFlux );
+        System.out.println( allNumbers );
+    }
+
+    private static void demoDataPullWithSubscriptionRead() {
+        System.out.println( "Demoing data pull with subscription read..." );
+
+        System.out.println( "Pulling data..." );
+        final Flux<Integer> allNumbersFlux = createPullTheDataFlux();
+
+        System.out.println( "Subscribing to Pull Data Flux..." );
+        allNumbersFlux.subscribe( System.out::println );
+    }
+
+    private static void demoDataPushWithSubscriptionRead() {
+        System.out.println( "Demoing data push with subscription read..." );
+
+        System.out.println( "\nPushing data..." );
+        final Flux<Integer> allNumbersFlux = createPushTheDataFlux();
+
+        System.out.println( "Subscribing to Push Data Flux..." );
+        allNumbersFlux.subscribe( System.out::println );
     }
 
     @NonNull
