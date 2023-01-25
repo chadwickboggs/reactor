@@ -33,6 +33,12 @@ import java.util.Optional;
  *         </blockquote>
  *     </li>
  * </ul>
+ * <p><p>
+ * The Reactive eXtensions API supports two methods of data consumption,
+ * blocking read, and subscription.  Blocking read blocks the reading thread.
+ * Subscription read may be processed by a separate thread, thereby not blocking
+ * the Flow construction thread.  In general, event handlers (push data flow)
+ * use subscriptions instead of blocking reads.
  */
 public class Main {
 
