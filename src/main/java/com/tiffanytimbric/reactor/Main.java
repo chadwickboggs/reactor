@@ -58,10 +58,10 @@ public class Main {
         System.out.println( "Demoing data pull with blocking read..." );
 
         System.out.println( "Pulling data..." );
-        Flux<Integer> allNumbersFlux = createPullTheDataFlux();
+        final Flux<Integer> allNumbersFlux = createPullTheDataFlux();
 
         System.out.println( "Extracting data as list from Pull Data Flux..." );
-        List<Integer> allNumbers = extractAsList( allNumbersFlux );
+        final List<Integer> allNumbers = extractAsList( allNumbersFlux );
         System.out.println( allNumbers );
     }
 
