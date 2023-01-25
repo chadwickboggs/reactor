@@ -22,14 +22,14 @@ import java.util.Optional;
  *         <blockquote>
  *          New data arrives asynchronously until the publisher signals its end.
  *          The subscriber process the incoming data as it arrives.  This flow
- *          type is alloigous to event stream, event processing.
+ *          type is analogous to event stream, event processing.
  *         </blockquote>
  *     </li>
  *     <li>
  *         <b>Pull:</b>
  *         <blockquote>
  *          A fixed block of data pre-exists before the processing of it begins.
- *          This flow type is analigous to Java Collections.
+ *          This flow type is analogous to Java Collections.
  *         </blockquote>
  *     </li>
  * </ul>
@@ -37,48 +37,56 @@ import java.util.Optional;
 public class Main {
 
     public static void main( @Nullable final String... args ) {
-        System.out.println("Program Start\n");
+        System.out.println( "Program Start\n" );
 
-        System.out.println("Pulling data...");
-        List<Integer> allNumbers = pullTheData();
+        System.out.println( "Pulling data..." );
+        Flux<Integer> allNumbersFlux = createPullTheDataFlux();
+        System.out.println( "Extracting data as list from Pull Data Flux..." );
+        List<Integer> allNumbers = extractAsList( allNumbersFlux );
         System.out.println( "All Numbers: " + allNumbers );
 
-        System.out.println("\nPushing data...");
-        allNumbers = pushTheData();
-        System.out.println( "All Numbers: " + allNumbers );
+        System.out.println( "Pulling data..." );
+        allNumbersFlux = createPullTheDataFlux();
+        System.out.println( "Subscribing to Pull Data Flux..." );
+        allNumbersFlux.subscribe( System.out::println );
 
-        System.out.println("\nProgram End");
+        System.out.println( "\nPushing data..." );
+        allNumbersFlux = createPushTheDataFlux();
+        System.out.println( "Subscribing to Push Data Flux..." );
+        allNumbersFlux.subscribe( System.out::println );
+
+        System.out.println( "\nProgram End" );
     }
 
     @NonNull
-    private static List<Integer> pullTheData() {
+    private static List<Integer> extractAsList(
+            @NonNull final Flux<Integer> allNumbersFlux
+    ) {
+        final Optional<List<Integer>> allNumbersOpt = allNumbersFlux
+                .collectList()
+                .blockOptional( Duration.ofSeconds( 1 ) );
+
+        return allNumbersOpt.orElseGet( ArrayList::new );
+    }
+
+    @NonNull
+    private static Flux<Integer> createPullTheDataFlux() {
         final Mono<Integer> zeroMono = Mono.just( 0 );
         final Flux<Integer> oddNumbersFlux = Flux.just( 1, 3, 5, 7 );
         final Flux<Integer> evenNumbersFlux = Flux.just( 2, 4, 6, 8 );
 
-        final Optional<List<Integer>> allNumbersOpt = zeroMono
-            .mergeWith( oddNumbersFlux )
-            .mergeWith( evenNumbersFlux )
-//            .subscribe( System.out::println )
-            .collectList()
-            .blockOptional( Duration.ofSeconds( 1 ) );
-
-        if ( allNumbersOpt.isEmpty() ) {
-            System.err.println("Error: No numbers returned.");
-
-            System.exit( 1 );
-        }
-
-        return allNumbersOpt.get();
+        return zeroMono
+                .mergeWith( oddNumbersFlux )
+                .mergeWith( evenNumbersFlux );
     }
 
     @NonNull
-    private static List<Integer> pushTheData() {
+    private static Flux<Integer> createPushTheDataFlux() {
 //        createEmitter( item -> System.out.println( item ), 1000l, 0 );
 //        createEmitter( consumer, 1000l, 1, 3, 5, 7 );
 //        createEmitter( consumer, 1000l, 2, 4, 6, 8 );
 
-        return new ArrayList<>();
+        return Flux.empty();
     }
 
 }
