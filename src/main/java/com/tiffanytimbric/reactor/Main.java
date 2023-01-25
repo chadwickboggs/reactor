@@ -14,14 +14,24 @@ import java.util.Optional;
 /**
  * The Reactive eXtensions API supports two methods of data flow, push and pull.
  * The Java Streams API support supports only one method of data flow, pull.
- * <p>
- * <h3>Data Flow Types</h3>
+ * <p><p>
+ * <h>Data Flow Types</h3>
  * <ul>
- *     <li><b>Push -</b> New data arrives asynchronously until the publisher signals its end.
- *                       The subscriber process the incoming data as it arrives.  This flow
- *                       type is alloigous to event stream, event processing.</li>
- *     <li><b>Pull -</b> A fixed block of data pre-exists before the processing of it begins.
- *                       This flow type is analigous to Java Collections.</li>
+ *     <li>
+ *         <b>Push:</b>
+ *         <blockquote>
+ *          New data arrives asynchronously until the publisher signals its end.
+ *          The subscriber process the incoming data as it arrives.  This flow
+ *          type is alloigous to event stream, event processing.
+ *         </blockquote>
+ *     </li>
+ *     <li>
+ *         <b>Pull:</b>
+ *         <blockquote>
+ *          A fixed block of data pre-exists before the processing of it begins.
+ *          This flow type is analigous to Java Collections.
+ *         </blockquote>
+ *     </li>
  * </ul>
  */
 public class Main {
