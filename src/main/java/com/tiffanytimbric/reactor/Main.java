@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 /**
@@ -43,6 +44,11 @@ import java.util.Optional;
  * use subscriptions instead of blocking reads.
  */
 public class Main {
+
+    public static final int PUBLISH_SLEEP_BOUND = 501;
+    public static final int PUBLISH_MAX_VALUE = 8;
+
+    private static final Random random = new Random( System.currentTimeMillis() );
 
     public static void main( @Nullable final String... args ) {
         System.out.println( "Program Start\n" );
@@ -81,7 +87,7 @@ public class Main {
         System.out.println( "Demoing data push with subscription read..." );
 
         System.out.println( "\nPushing data..." );
-        final Flux<Integer> allNumbersFlux = createPushTheDataFlux( 8 );
+        final Flux<Integer> allNumbersFlux = createPushTheDataFlux( PUBLISH_MAX_VALUE );
 
         System.out.println( "Subscribing to Push Data Flux..." );
         allNumbersFlux.subscribe( System.out::println );
@@ -116,11 +122,15 @@ public class Main {
 
         final Flux<Integer> oddNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 1; count <= maxValue; count += 2 ) {
+                try {Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ));} catch ( Throwable ignored ) {}
+
                 emitter.next( count );
             }
         } ).start() );
         final Flux<Integer> evenNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 2; count <= maxValue; count += 2 ) {
+                try {Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ));} catch ( Throwable ignored ) {}
+
                 emitter.next( count );
             }
         } ).start() );
