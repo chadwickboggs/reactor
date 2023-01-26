@@ -14,6 +14,8 @@ import java.util.Optional;
 /**
  * The Reactive eXtensions API supports two methods of data flow, push and pull.
  * The Java Streams API support supports only one method of data flow, pull.
+ * Reactive Streams defines pull data flow as a "cold" publisher, and the push
+ * data flow as a "hot" publisher.
  * <p><p>
  * <h>Data Flow Types</h3>
  * <ul>
@@ -79,10 +81,11 @@ public class Main {
         System.out.println( "Demoing data push with subscription read..." );
 
         System.out.println( "\nPushing data..." );
-        final Flux<Integer> allNumbersFlux = createPushTheDataFlux();
+        final Flux<Integer> allNumbersFlux = createPushTheDataFlux( 8 );
 
         System.out.println( "Subscribing to Push Data Flux..." );
         allNumbersFlux.subscribe( System.out::println );
+        allNumbersFlux.publish().connect();
     }
 
     @NonNull
@@ -108,12 +111,23 @@ public class Main {
     }
 
     @NonNull
-    private static Flux<Integer> createPushTheDataFlux() {
-//        createEmitter( item -> System.out.println( item ), 1000l, 0 );
-//        createEmitter( consumer, 1000l, 1, 3, 5, 7 );
-//        createEmitter( consumer, 1000l, 2, 4, 6, 8 );
+    private static Flux<Integer> createPushTheDataFlux( int maxValue ) {
+        final Mono<Integer> zeroMono = Mono.just( 0 );
 
-        return Flux.empty();
+        final Flux<Integer> oddNumbersFlux = Flux.create( emitter -> new Thread( () -> {
+            for ( int count = 1; count <= maxValue; count += 2 ) {
+                emitter.next( count );
+            }
+        } ).start() );
+        final Flux<Integer> evenNumbersFlux = Flux.create( emitter -> new Thread( () -> {
+            for ( int count = 2; count <= maxValue; count += 2 ) {
+                emitter.next( count );
+            }
+        } ).start() );
+
+        return zeroMono
+                .mergeWith( oddNumbersFlux )
+                .mergeWith( evenNumbersFlux );
     }
 
 }
