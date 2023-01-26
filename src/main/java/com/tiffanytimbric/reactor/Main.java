@@ -122,14 +122,20 @@ public class Main {
 
         final Flux<Integer> oddNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 1; count <= maxValue; count += 2 ) {
-                try {Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ));} catch ( Throwable ignored ) {}
+                try {
+                    Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
+                } catch ( Throwable ignored ) {
+                }
 
                 emitter.next( count );
             }
         } ).start() );
         final Flux<Integer> evenNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 2; count <= maxValue; count += 2 ) {
-                try {Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ));} catch ( Throwable ignored ) {}
+                try {
+                    Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
+                } catch ( Throwable ignored ) {
+                }
 
                 emitter.next( count );
             }
