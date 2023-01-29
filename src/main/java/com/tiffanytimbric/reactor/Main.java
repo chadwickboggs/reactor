@@ -59,7 +59,7 @@ public class Main {
         System.out.println();
         demoDataPushWithSubscriptionRead();
         System.out.println();
-        demoDataPushWithSubscriptionReadSorted( PUBLISH_MAX_VALUE / 2 + 1 );
+        demoDataPushWithSubscriptionReadSorted();
 
         System.out.println( "\nProgram End" );
     }
@@ -98,7 +98,7 @@ public class Main {
         sleep( PUBLISH_SLEEP_BOUND * ( PUBLISH_MAX_VALUE / 2 + 1 ) );
     }
 
-    private static void demoDataPushWithSubscriptionReadSorted( int windowSize ) {
+    private static void demoDataPushWithSubscriptionReadSorted() {
         System.out.println( "Demoing data push with subscription read sorted..." );
 
         System.out.println( "\nPushing data..." );
