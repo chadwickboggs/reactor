@@ -6,10 +6,8 @@ import reactor.util.annotation.NonNull;
 import reactor.util.annotation.Nullable;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Function;
 
 
 /**
@@ -102,14 +100,23 @@ public class Main {
         System.out.println( "Demoing data push with subscription read sorted..." );
 
         System.out.println( "\nPushing data..." );
-        final Flux<Integer> allNumbersSortedFlux = createPushTheDataFlux( PUBLISH_MAX_VALUE )
-                .sort();
+        final Flux<Integer> allNumbersFlux = createPushTheDataFlux( PUBLISH_MAX_VALUE );
+        final Flux<Integer> allNumbersSortedFlux = allNumbersFlux
+                .buffer( PUBLISH_MAX_VALUE + 1 )
+                .map( Main::sort )
+                .flatMapIterable( Function.identity() );
 
         System.out.println( "Subscribing to Push Data Sorted Flux..." );
         allNumbersSortedFlux.subscribe( System.out::println );
         allNumbersSortedFlux.publish().connect();
 
         sleep( PUBLISH_SLEEP_BOUND * ( PUBLISH_MAX_VALUE / 2 + 1 ) );
+    }
+
+    private static List<Integer> sort( List<Integer> numbers ) {
+        Collections.sort( numbers );
+
+        return numbers;
     }
 
     @NonNull
