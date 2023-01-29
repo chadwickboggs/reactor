@@ -58,6 +58,8 @@ public class Main {
         demoDataPullWithSubscriptionRead();
         System.out.println();
         demoDataPushWithSubscriptionRead();
+        System.out.println();
+        demoDataPushWithSubscriptionReadSorted( PUBLISH_MAX_VALUE / 2 + 1 );
 
         System.out.println( "\nProgram End" );
     }
@@ -92,6 +94,22 @@ public class Main {
         System.out.println( "Subscribing to Push Data Flux..." );
         allNumbersFlux.subscribe( System.out::println );
         allNumbersFlux.publish().connect();
+
+        sleep( PUBLISH_SLEEP_BOUND * ( PUBLISH_MAX_VALUE / 2 + 1 ) );
+    }
+
+    private static void demoDataPushWithSubscriptionReadSorted( int windowSize ) {
+        System.out.println( "Demoing data push with subscription read sorted..." );
+
+        System.out.println( "\nPushing data..." );
+        final Flux<Integer> allNumbersSortedFlux = createPushTheDataFlux( PUBLISH_MAX_VALUE )
+                .sort();
+
+        System.out.println( "Subscribing to Push Data Sorted Flux..." );
+        allNumbersSortedFlux.subscribe( System.out::println );
+        allNumbersSortedFlux.publish().connect();
+
+        sleep( PUBLISH_SLEEP_BOUND * ( PUBLISH_MAX_VALUE / 2 + 1 ) );
     }
 
     @NonNull
@@ -122,20 +140,14 @@ public class Main {
 
         final Flux<Integer> oddNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 1; count <= maxValue; count += 2 ) {
-                try {
-                    Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
-                } catch ( Throwable ignored ) {
-                }
+                sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
 
                 emitter.next( count );
             }
         } ).start() );
         final Flux<Integer> evenNumbersFlux = Flux.create( emitter -> new Thread( () -> {
             for ( int count = 2; count <= maxValue; count += 2 ) {
-                try {
-                    Thread.sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
-                } catch ( Throwable ignored ) {
-                }
+                sleep( random.nextInt( PUBLISH_SLEEP_BOUND ) );
 
                 emitter.next( count );
             }
@@ -144,6 +156,13 @@ public class Main {
         return zeroMono
                 .mergeWith( oddNumbersFlux )
                 .mergeWith( evenNumbersFlux );
+    }
+
+    private static void sleep( int millis ) {
+        try {
+            Thread.sleep( millis );
+        } catch ( Throwable ignored ) {
+        }
     }
 
 }
